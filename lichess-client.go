@@ -39,7 +39,7 @@ type boardMoveResponse struct {
 	Error string
 }
 
-func get(lichessAPIKey string) ([]nowPlaying, error) {
+func getAccountPlaying(lichessAPIKey string) ([]nowPlaying, error) {
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", "https://lichess.org/api/account/playing", nil)
@@ -64,10 +64,10 @@ func get(lichessAPIKey string) ([]nowPlaying, error) {
 	return data.NowPlaying, nil
 }
 
-func post(lichessAPIKey string, gameID string, move string) (string, error) {
+func postBoardGameMove(lichessAPIKey string, gameID string, move string) (string, error) {
 	client := &http.Client{}
 
-	url := fmt.Sprintf("https://lichess.org//api/board/game/%s/move/%s", gameID, move)
+	url := fmt.Sprintf("https://lichess.org/api/board/game/%s/move/%s", gameID, move)
 
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {

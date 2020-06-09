@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestGetGameFullId(t *testing.T) {
 	var input []nowPlaying
@@ -13,19 +15,25 @@ func TestGetGameFullId(t *testing.T) {
 	var tests = []struct {
 		in  string
 		out string
+		err bool
 	}{
-		{"h", "hP09Ep7h"},
-		{"m", "mjqGC18w"},
-		{"mjt", "mjtGG77d"},
+		{"h", "hP09Ep7h", false},
+		{"m", "Prefix 'm' matches multiple game IDs: [mjqGC18w mjtGG77d]", true},
+		{"mjt", "mjtGG77d", false},
+		{"j", "Unable to find game with ID prefixed with: 'j'", true},
 	}
 
 	for _, test := range tests {
 		got, err := getGameFullId(input, test.in)
+
 		if err != nil {
-			t.Errorf("Test failed due to error: '%s'", err)
-		}
-		if got != test.out {
-			t.Errorf("Expected '%s' but got '%s", test.out, got)
+			if err.Error() != test.out {
+				t.Errorf("Unexpected error: '%s'", err)
+			}
+		} else {
+			if got != test.out {
+				t.Errorf("Expected '%s' but got '%s", test.out, got)
+			}
 		}
 	}
 }

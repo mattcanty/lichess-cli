@@ -1,16 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 type gamesCmd struct {
 }
 
 func (r *gamesCmd) Run(ctx *context) error {
-	nowPlaying, err := get(cli.LichessAPIKey)
+	nowPlaying, err := getAccountPlaying(cli.LichessAPIKey)
 	if err != nil {
 		return err
 	}
@@ -26,13 +25,13 @@ type playCmd struct {
 }
 
 func (r *playCmd) Run(ctx *context) error {
-	nowPlaying, err := get(cli.LichessAPIKey)
+	nowPlaying, err := getAccountPlaying(cli.LichessAPIKey)
 	if err != nil {
 		return err
 	}
 	gameFullID, err := getGameFullId(nowPlaying, r.GameIdPrefix)
 
-	message, err := post(cli.LichessAPIKey, gameFullID, r.Move)
+	message, err := postBoardGameMove(cli.LichessAPIKey, gameFullID, r.Move)
 
 	if err != nil {
 		return err
@@ -46,10 +45,20 @@ func (r *playCmd) Run(ctx *context) error {
 }
 
 func getGameFullId(nowPlaying []nowPlaying, gameIDPrefix string) (string, error) {
+	var matches []string
 	for _, game := range nowPlaying {
 		if strings.HasPrefix(game.FullID, gameIDPrefix) {
-			return game.FullID, nil
+			matches = append(matches, game.FullID)
 		}
 	}
-	return "", errors.Errorf("Unable to find game with ID prefixed with: '%s'", gameIDPrefix)
+
+	if len(matches) == 1 {
+		return matches[0], nil
+	}
+
+	if len(matches) > 1 {
+		return "", fmt.Errorf("Prefix '%s' matches multiple game IDs: %s", gameIDPrefix, matches)
+	}
+
+	return "", fmt.Errorf("Unable to find game with ID prefixed with: '%s'", gameIDPrefix)
 }
