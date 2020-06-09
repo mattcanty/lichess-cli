@@ -3,6 +3,8 @@
 ## Install
 
 ```shell
+git clone git@github.com:mattcanty/lichess-cli.git
+cd lichess-cli
 make install
 ```
 
