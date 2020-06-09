@@ -17,7 +17,7 @@ make install
 
 ```json
 {
-  "lichess_api_key":"xxxxxxxxxxxxxxxx"
+  "lichess_api_key": "xxxxxxxxxxxxxxxx"
 }
 ```
 
