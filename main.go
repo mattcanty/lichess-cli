@@ -13,7 +13,6 @@ var cli struct {
 	LichessAPIKey string `help:"Enable debug mode."`
 
 	Games gamesCmd `cmd help:"Lists all active games"`
-	View  viewCmd  `cmd help:"View state of a game."`
 	Play  playCmd  `cmd help:"Play a move in a game."`
 }
 

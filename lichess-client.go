@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -65,20 +64,20 @@ func get(lichessAPIKey string) ([]nowPlaying, error) {
 	return data.NowPlaying, nil
 }
 
-func post(lichessAPIKey string, gameID string, move string) error {
+func post(lichessAPIKey string, gameID string, move string) (string, error) {
 	client := &http.Client{}
 
 	url := fmt.Sprintf("https://lichess.org//api/board/game/%s/move/%s", gameID, move)
 
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
-		log.Fatalln(err)
+		return "", err
 	}
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", lichessAPIKey))
 
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalln(err)
+		return "", err
 	}
 	defer resp.Body.Close()
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
@@ -86,9 +85,5 @@ func post(lichessAPIKey string, gameID string, move string) error {
 	var boardMoveResponse boardMoveResponse
 	json.Unmarshal(bodyBytes, &boardMoveResponse)
 
-	if boardMoveResponse.Ok {
-		return nil
-	}
-
-	return fmt.Errorf(boardMoveResponse.Error)
+	return boardMoveResponse.Error, nil
 }

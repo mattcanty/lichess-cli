@@ -5,3 +5,7 @@
 ```shell
 make install
 ```
+
+## Play
+
+![demo](demo.gif)
