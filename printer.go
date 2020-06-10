@@ -26,7 +26,7 @@ func printGames(nowPlaying []nowPlaying) {
 		{Number: 2, AutoMerge: true},
 		{Number: 3, AutoMerge: true},
 		{Number: 4, AutoMerge: true},
-		{Number: 5, AutoMerge: true},
+		{Number: 5, AutoMerge: false},
 	})
 	t.SetStyle(table.StyleBold)
 	t.Render()
