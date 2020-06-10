@@ -13,7 +13,9 @@ var cli struct {
 	LichessAPIKey string `help:"Enable debug mode."`
 
 	Games gamesCmd `cmd help:"Lists all active games"`
+	G     gamesCmd `cmd help:"Lists all active games"`
 	Play  playCmd  `cmd help:"Play a move in a game."`
+	P     playCmd  `cmd help:"Play a move in a game."`
 }
 
 func main() {
