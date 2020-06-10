@@ -20,8 +20,8 @@ func (r *gamesCmd) Run(ctx *context) error {
 }
 
 type playCmd struct {
-	GameIdPrefix string `arg name:"game-id-prefix" help:"The game ID." type:"string"`
-	Move         string `arg name:"move" help:"The move." type:"string"`
+	GameIDPrefix string `arg:"" name:"game-id-prefix" help:"The game ID." type:"string"`
+	Move         string `arg:"" name:"move" help:"The move." type:"string"`
 }
 
 func (r *playCmd) Run(ctx *context) error {
@@ -29,7 +29,7 @@ func (r *playCmd) Run(ctx *context) error {
 	if err != nil {
 		return err
 	}
-	gameFullID, err := getGameFullId(nowPlaying, r.GameIdPrefix)
+	gameFullID, err := getGameFullId(nowPlaying, r.GameIDPrefix)
 
 	message, err := postBoardGameMove(cli.LichessAPIKey, gameFullID, r.Move)
 
