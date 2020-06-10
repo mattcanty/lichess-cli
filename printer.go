@@ -10,10 +10,14 @@ func printGames(nowPlaying []nowPlaying) {
 	rowConfigAutoMerge := table.RowConfig{AutoMerge: true}
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"ID", "My Turn", "Opponent", "Last Move", "Board"})
+	t.AppendHeader(table.Row{"ID", "Turn", "Opponent", "Last Move", "Board"})
 	for _, game := range nowPlaying {
 		for _, row := range getRowStrings(game.Fen, game.Color == "black") {
-			t.AppendRow([]interface{}{game.GameID, game.IsMyTurn, game.Opponent.Username, game.LastMove, row}, rowConfigAutoMerge)
+			turn := "Their Turn"
+			if game.IsMyTurn {
+				turn = "Your Turn"
+			}
+			t.AppendRow([]interface{}{game.GameID, turn, game.Opponent.Username, game.LastMove, row}, rowConfigAutoMerge)
 		}
 		t.AppendSeparator()
 	}
