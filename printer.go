@@ -41,7 +41,7 @@ var (
 		"red":             {Black: text.Colors{text.BgRed}, White: text.Colors{text.BgHiRed}},
 		"yellow":          {Black: text.Colors{text.BgYellow}, White: text.Colors{text.BgHiYellow}},
 	}
-	colorLegendMap = map[string]*text.Colors{
+	colorLegendMap = map[string]text.Colors{
 		"none": {},
 		"default": {
 			text.Italic,    // Italics may not work in all consoles
@@ -114,16 +114,18 @@ func getCellColors(rowIdx int, colIdx int, piece Piece, cfg printerConfig) text.
 	return cellColor
 }
 
+func getLegendColors(cfg printerConfig) text.Colors {
+	if colors, ok := colorLegendMap[cfg.colorLegend]; ok {
+		return colors
+	}
+	return colorLegendMap["default"]
+}
+
 func printGame(game nowPlaying, cfg printerConfig) string {
 	t := table.NewWriter()
 
-	// get the colors to apply on the legend/key
-	colorLegend := colorLegendMap[cfg.colorLegend]
-	if colorLegend == nil {
-		colorLegend = colorLegendMap["default"]
-	}
-
 	// loop through each line in the game map and render each row
+	colorLegend := getLegendColors(cfg)
 	for rowIdx, row := range translateGame(game.Fen) {
 		rowColorized := table.Row{}
 		for colIdx, col := range row {
