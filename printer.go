@@ -17,12 +17,14 @@ type colorCode struct {
 // printerConfig controls how the game boards are printed
 type printerConfig struct {
 	colorBoard  string
+	colorLegend string
 	colorPieces string
 	showLegend  bool
 }
 
 func (pc *printerConfig) clean() {
 	pc.colorBoard = strings.ToLower(pc.colorBoard)
+	pc.colorLegend = strings.ToLower(pc.colorLegend)
 	pc.colorPieces = strings.ToLower(pc.colorPieces)
 }
 
@@ -39,9 +41,12 @@ var (
 		"red":             {Black: text.Colors{text.BgRed}, White: text.Colors{text.BgHiRed}},
 		"yellow":          {Black: text.Colors{text.BgYellow}, White: text.Colors{text.BgHiYellow}},
 	}
-	colorLegend = text.Colors{
-		text.Italic,    // Italics may not work in all consoles
-		text.FgHiBlack, // HiBlack == Gray
+	colorLegendMap = map[string]*text.Colors{
+		"none": {},
+		"default": {
+			text.Italic,    // Italics may not work in all consoles
+			text.FgHiBlack, // HiBlack == Gray
+		},
 	}
 	colorPiecesMap = map[string]*colorCode{
 		"default":         {Black: text.Colors{text.FgBlack}, White: text.Colors{text.FgHiBlack}},
@@ -70,16 +75,7 @@ var (
 		'q': {PieceQueenBlack},
 		'r': {PieceRookBlack},
 	}
-	legendRow = table.Row{
-		colorLegend.Sprint(" a "),
-		colorLegend.Sprint(" b "),
-		colorLegend.Sprint(" c "),
-		colorLegend.Sprint(" d "),
-		colorLegend.Sprint(" e "),
-		colorLegend.Sprint(" f "),
-		colorLegend.Sprint(" g "),
-		colorLegend.Sprint(" h "),
-	}
+	legendRow      = table.Row{" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "}
 	pieceStringMap = map[Piece]string{
 		PieceBishopBlack: " ♝ ",
 		PieceBishopWhite: " ♗ ",
@@ -121,6 +117,12 @@ func getCellColors(rowIdx int, colIdx int, piece Piece, cfg printerConfig) text.
 func printGame(game nowPlaying, cfg printerConfig) string {
 	t := table.NewWriter()
 
+	// get the colors to apply on the legend/key
+	colorLegend := colorLegendMap[cfg.colorLegend]
+	if colorLegend == nil {
+		colorLegend = colorLegendMap["default"]
+	}
+
 	// loop through each line in the game map and render each row
 	for rowIdx, row := range translateGame(game.Fen) {
 		rowColorized := table.Row{}
@@ -134,7 +136,11 @@ func printGame(game nowPlaying, cfg printerConfig) string {
 		t.AppendRow(rowColorized)
 	}
 	if cfg.showLegend {
-		t.AppendRow(legendRow)
+		row := table.Row{}
+		for _, col := range legendRow {
+			row = append(row, colorLegend.Sprint(col))
+		}
+		t.AppendRow(row)
 	}
 
 	// set up the options to not draw any separators to make it look like a real

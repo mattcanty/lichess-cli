@@ -12,16 +12,19 @@ import (
 var (
 	testConfig = printerConfig{
 		colorBoard:  "none",
+		colorLegend: "none",
 		colorPieces: "none",
 		showLegend:  true,
 	}
 	testConfigColored = printerConfig{
 		colorBoard:  "default",
+		colorLegend: "default",
 		colorPieces: "default",
 		showLegend:  true,
 	}
 	testConfigWithoutLegend = printerConfig{
 		colorBoard:  "none",
+		colorLegend: "none",
 		colorPieces: "none",
 		showLegend:  false,
 	}

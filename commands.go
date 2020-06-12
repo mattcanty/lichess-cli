@@ -16,6 +16,7 @@ func (r *gamesCmd) Run(ctx *context) error {
 
 	fmt.Println(printGames(nowPlaying, printerConfig{
 		colorBoard:  "default",
+		colorLegend: "default",
 		colorPieces: "default",
 		showLegend:  true,
 	}))
