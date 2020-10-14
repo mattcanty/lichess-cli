@@ -19,6 +19,7 @@ type printerConfig struct {
 	colorBoard  string
 	colorLegend string
 	colorPieces string
+	ascii       bool
 	showLegend  bool
 }
 
@@ -75,8 +76,23 @@ var (
 		'q': {PieceQueenBlack},
 		'r': {PieceRookBlack},
 	}
-	legendRow      = table.Row{" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "}
-	pieceStringMap = map[Piece]string{
+	legendRow           = table.Row{" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "}
+	asciiPieceStringMap = map[Piece]string{
+		PieceBishopBlack: " B ",
+		PieceBishopWhite: " B ",
+		PieceKingBlack:   " K ",
+		PieceKingWhite:   " K ",
+		PieceKnightBlack: " N ",
+		PieceKnightWhite: " N ",
+		PieceNone:        "   ",
+		PiecePawnBlack:   " P ",
+		PiecePawnWhite:   " P ",
+		PieceQueenBlack:  " Q ",
+		PieceQueenWhite:  " Q ",
+		PieceRookBlack:   " R ",
+		PieceRookWhite:   " R ",
+	}
+	unicodePieceStringMap = map[Piece]string{
 		PieceBishopBlack: " ♝ ",
 		PieceBishopWhite: " ♗ ",
 		PieceKingBlack:   " ♚ ",
@@ -130,7 +146,11 @@ func printGame(game nowPlaying, cfg printerConfig) string {
 		rowColorized := table.Row{}
 		for colIdx, col := range row {
 			cellColors := getCellColors(rowIdx, colIdx, row[colIdx], cfg)
-			rowColorized = append(rowColorized, cellColors.Sprint(pieceStringMap[col]))
+			if cfg.ascii {
+				rowColorized = append(rowColorized, cellColors.Sprint(asciiPieceStringMap[col]))
+			} else {
+				rowColorized = append(rowColorized, cellColors.Sprint(unicodePieceStringMap[col]))
+			}
 		}
 		if cfg.showLegend {
 			rowColorized = append(rowColorized, colorLegend.Sprintf(" %d ", 8-rowIdx))
