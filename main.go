@@ -10,12 +10,17 @@ type context struct {
 
 var cli struct {
 	Debug         bool   `help:"Enable debug mode."`
-	LichessAPIKey string `help:"Enable debug mode."`
+	LichessAPIKey string `help:"Lichess API key"`
 
-	Games gamesCmd `cmd:"" help:"Lists all active games"`
-	G     gamesCmd `cmd:"" help:"Lists all active games"`
-	Play  playCmd  `cmd:"" help:"Play a move in a game."`
-	P     playCmd  `cmd:"" help:"Play a move in a game."`
+	AsciiMode   bool     `help:"Use Ascii characters instead of unicode chess pieces"`
+	ColorBoard  string   `help:"Color of the board. Options: default, black_and_white, blue, cyan, green, magenta, none, red, yellow" default:"default"`
+	ColorLegend string   `help:"Color of the legend. Options: none, default" default:"default"`
+	ColorPieces string   `help:"Color of the pieces. Options: default, black_and_white, none" default:"default"`
+	HideLegend  bool     `help:"Hide legend on the board"`
+	Games       gamesCmd `cmd:"" help:"Lists all active games"`
+	G           gamesCmd `cmd:"" help:"Lists all active games"`
+	Play        playCmd  `cmd:"" help:"Play a move in a game."`
+	P           playCmd  `cmd:"" help:"Play a move in a game."`
 }
 
 func main() {
