@@ -205,6 +205,15 @@ func printMoveMessage(move string, message string) {
 	t.Render()
 }
 
+func printNewGameId(gameId string) {
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"Game Id"})
+	t.AppendRow([]interface{}{gameId})
+	t.SetStyle(table.StyleBold)
+	t.Render()
+}
+
 func translateGame(fen string) [][]Piece {
 	var rsp [][]Piece
 	for _, row := range strings.Split(fen, "/") {
