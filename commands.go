@@ -52,13 +52,13 @@ func (r *playCmd) Run(ctx *context) error {
 }
 
 type newAIGameCmd struct {
-	Level int    `arg:"" name:"level" help:"The AI level, 1-12" type:"int"`
+	Level int    `arg:"" name:"level" help:"The AI level, 1-8" type:"int"`
 	Color string `arg:"" name:"color" help:"The color you want to be, white or black" type:"string"`
 }
 
 func (r *newAIGameCmd) Run(ctx *context) error {
-	if r.Level < 1 || r.Level > 12 {
-		return errors.New("Level must be >= 1 and <= 12")
+	if r.Level < 1 || r.Level > 8 {
+		return errors.New("Level must be >= 1 and <= 8")
 	}
 	if r.Color != "white" && r.Color != "black" {
 		return errors.New("Color must be either \"white\" or \"black\"")
