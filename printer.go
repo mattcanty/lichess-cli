@@ -76,7 +76,8 @@ var (
 		'q': {PieceQueenBlack},
 		'r': {PieceRookBlack},
 	}
-	legendRow           = table.Row{" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "}
+	legendRowWhite      = table.Row{" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "}
+	legendRowBlack      = table.Row{" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "}
 	asciiPieceStringMap = map[Piece]string{
 		PieceBishopBlack: " B ",
 		PieceBishopWhite: " B ",
@@ -142,7 +143,7 @@ func printGame(game nowPlaying, cfg printerConfig) string {
 
 	// loop through each line in the game map and render each row
 	colorLegend := getLegendColors(cfg)
-	for rowIdx, row := range translateGame(game.Fen) {
+	for rowIdx, row := range translateGame(game) {
 		rowColorized := table.Row{}
 		for colIdx, col := range row {
 			cellColors := getCellColors(rowIdx, colIdx, row[colIdx], cfg)
@@ -153,12 +154,22 @@ func printGame(game nowPlaying, cfg printerConfig) string {
 			}
 		}
 		if cfg.showLegend {
-			rowColorized = append(rowColorized, colorLegend.Sprintf(" %d ", 8-rowIdx))
+			if game.Color == "white" {
+				rowColorized = append(rowColorized, colorLegend.Sprintf(" %d ", 8-rowIdx))
+			} else {
+				rowColorized = append(rowColorized, colorLegend.Sprintf(" %d ", rowIdx+1))
+			}
 		}
 		t.AppendRow(rowColorized)
 	}
 	if cfg.showLegend {
 		row := table.Row{}
+		var legendRow table.Row
+		if game.Color == "white" {
+			legendRow = legendRowWhite
+		} else {
+			legendRow = legendRowBlack
+		}
 		for _, col := range legendRow {
 			row = append(row, colorLegend.Sprint(col))
 		}
@@ -214,14 +225,29 @@ func printNewGameId(gameId string) {
 	t.Render()
 }
 
-func translateGame(fen string) [][]Piece {
+func translateGame(game nowPlaying) [][]Piece {
+	fen := game.Fen
 	var rsp [][]Piece
-	for _, row := range strings.Split(fen, "/") {
-		var rspRow []Piece
-		for _, col := range row {
-			rspRow = append(rspRow, fenPieceMap[col]...)
+
+	if game.Color == "white" {
+		for _, row := range strings.Split(fen, "/") {
+			var rspRow []Piece
+			for _, col := range row {
+				rspRow = append(rspRow, fenPieceMap[col]...)
+			}
+			rsp = append(rsp, rspRow)
 		}
-		rsp = append(rsp, rspRow)
+	} else {
+		fens := strings.Split(fen, "/")
+		for i, _ := range fens {
+			row := fens[len(fens)-1-i]
+			var rspRow []Piece
+			for j, _ := range row {
+				col := []rune(row)[len(row)-1-j]
+				rspRow = append(rspRow, fenPieceMap[col]...)
+			}
+			rsp = append(rsp, rspRow)
+		}
 	}
 	return rsp
 }
