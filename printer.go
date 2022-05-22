@@ -226,7 +226,7 @@ func printNewGameId(gameId string) {
 }
 
 func translateGame(game nowPlaying) [][]Piece {
-	fen := game.Fen
+	fen := strings.Split(game.Fen, " ")[0]
 	var rsp [][]Piece
 
 	if game.Color == "white" {
