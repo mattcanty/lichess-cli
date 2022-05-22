@@ -1,6 +1,6 @@
 module github.com/mattcanty/lichess-cli
 
-go 1.13
+go 1.18
 
 require (
 	github.com/alecthomas/kong v0.2.9
