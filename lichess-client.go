@@ -95,6 +95,21 @@ type genericErrorResponse struct {
 	Error string
 }
 
+func enhanceErrorMessage(apiError string) string {
+	switch apiError {
+	case "Missing scope":
+		return "Missing scope: Your API token doesn't have the required permission. Please go to https://lichess.org/account/oauth/token and create a new token with 'Play games with the board API' selected."
+	case "Invalid move":
+		return "Invalid move: Please use algebraic notation like 'e2e4' (from square to square). Example: to move a pawn from e2 to e4, use 'e2e4'."
+	case "Not your turn":
+		return "Not your turn: Please wait for your opponent to make their move before playing again."
+	case "Game not found":
+		return "Game not found: Please check the game ID and ensure you have an active game."
+	default:
+		return apiError
+	}
+}
+
 func getAccountPlaying(lichessAPIKey string) ([]nowPlaying, error) {
 	client := &http.Client{}
 
@@ -111,8 +126,13 @@ func getAccountPlaying(lichessAPIKey string) ([]nowPlaying, error) {
 	defer resp.Body.Close()
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 
-	var data nowPlayingResponse
+	if resp.StatusCode >= 400 {
+		var err genericErrorResponse
+		json.Unmarshal(bodyBytes, &err)
+		return nil, errors.New(enhanceErrorMessage(err.Error))
+	}
 
+	var data nowPlayingResponse
 	err = json.Unmarshal(bodyBytes, &data)
 	if err != nil {
 		return nil, err
@@ -138,10 +158,15 @@ func postBoardGameMove(lichessAPIKey string, gameID string, move string) (string
 	defer resp.Body.Close()
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 
-	var boardMoveResponse boardMoveResponse
-	json.Unmarshal(bodyBytes, &boardMoveResponse)
-
-	return boardMoveResponse.Error, nil
+	if resp.StatusCode >= 400 {
+		var err genericErrorResponse
+		json.Unmarshal(bodyBytes, &err)
+		return "", errors.New(enhanceErrorMessage(err.Error))
+	} else {
+		var boardMoveResponse boardMoveResponse
+		json.Unmarshal(bodyBytes, &boardMoveResponse)
+		return boardMoveResponse.Error, nil
+	}
 }
 
 func postChallengeAI(lichessAPIKey string, level int, color string) (string, error) {
@@ -169,7 +194,7 @@ func postChallengeAI(lichessAPIKey string, level int, color string) (string, err
 	if resp.StatusCode >= 400 {
 		var err genericErrorResponse
 		json.Unmarshal(bodyBytes, &err)
-		return "", errors.New(err.Error)
+		return "", errors.New(enhanceErrorMessage(err.Error))
 	} else {
 		var challengeAIResponse game
 		json.Unmarshal(bodyBytes, &challengeAIResponse)

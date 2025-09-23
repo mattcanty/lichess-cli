@@ -37,6 +37,9 @@ func (r *playCmd) Run(ctx *context) error {
 		return err
 	}
 	gameFullID, err := getGameFullId(nowPlaying, r.GameIDPrefix)
+	if err != nil {
+		return err
+	}
 
 	message, err := postBoardGameMove(cli.LichessAPIKey, gameFullID, r.Move)
 
